@@ -1,62 +1,300 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>陈冠行 - 个人主页</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="陈冠行的个人主页：教育背景、工作经历、技能与联系方式。" />
+    <title>陈冠行｜个人主页</title>
     <style>
+        :root {
+            --bg: #0b1220;
+            --bg-2: #0a1b2b;
+            --surface: rgba(255, 255, 255, 0.94);
+            --surface-2: rgba(255, 255, 255, 0.78);
+            --text: #0f172a;
+            --muted: rgba(15, 23, 42, 0.72);
+            --border: rgba(15, 23, 42, 0.12);
+            --brand: #22c55e;
+            --brand-2: #16a34a;
+            --ring: rgba(34, 197, 94, 0.25);
+            --shadow: 0 10px 30px rgba(2, 8, 23, 0.18);
+            --radius: 16px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --surface: rgba(15, 23, 42, 0.88);
+                --surface-2: rgba(15, 23, 42, 0.62);
+                --text: rgba(255, 255, 255, 0.92);
+                --muted: rgba(255, 255, 255, 0.70);
+                --border: rgba(255, 255, 255, 0.14);
+                --shadow: 0 14px 38px rgba(0, 0, 0, 0.35);
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
         body {
-            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            color: #333;
+            font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
+                "Apple Color Emoji", "Segoe UI Emoji";
+            color: var(--text);
+            background:
+                radial-gradient(1200px 800px at 15% 10%, rgba(34, 197, 94, 0.22), transparent 60%),
+                radial-gradient(900px 600px at 85% 30%, rgba(59, 130, 246, 0.18), transparent 55%),
+                linear-gradient(180deg, var(--bg), var(--bg-2));
         }
-        header {
-            background-color: #4CAF50;
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .hero {
+            padding: 42px 0 56px;
+        }
+
+        .hero__inner {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 18px;
+            display: grid;
+            place-items: center;
             color: white;
-            padding: 1em 0;
-            text-align: center;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            background: linear-gradient(135deg, var(--brand), #60a5fa);
+            box-shadow: 0 12px 26px rgba(0, 0, 0, 0.25);
+            user-select: none;
         }
+
+        .hero__title {
+            margin: 0;
+            font-size: clamp(22px, 3.2vw, 32px);
+            line-height: 1.15;
+            color: rgba(255, 255, 255, 0.94);
+        }
+
+        .hero__subtitle {
+            margin: 8px 0 0;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.76);
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: rgba(255, 255, 255, 0.86);
+            font-size: 13px;
+            backdrop-filter: blur(10px);
+        }
+
         .container {
-            width: 80%;
-            margin: auto;
-            overflow: hidden;
-            padding: 2em 0;
+            max-width: 980px;
+            margin: -28px auto 56px;
+            padding: 0 20px;
         }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .card + .card {
+            margin-top: 14px;
+        }
+
         h2 {
-            color: #4CAF50;
+            margin: 0 0 12px;
+            font-size: 18px;
+            letter-spacing: 0.01em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .section {
-            background: white;
-            margin: 1em 0;
-            padding: 1em;
-            border-radius: 5px;
+
+        h2::before {
+            content: "";
+            width: 9px;
+            height: 18px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, var(--brand), var(--brand-2));
         }
-        .contact {
+
+        p {
+            margin: 0 0 10px;
+            line-height: 1.75;
+            color: var(--muted);
+        }
+
+        ul {
+            margin: 10px 0 0;
+            padding-left: 18px;
+            color: var(--muted);
+        }
+
+        li {
+            margin: 8px 0;
+            line-height: 1.7;
+        }
+
+        .experience {
+            list-style: none;
+            padding-left: 0;
+            margin: 10px 0 0;
+            display: grid;
+            gap: 12px;
+        }
+
+        .experience > li {
+            padding: 14px 14px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+        }
+
+        .experience strong {
+            color: var(--text);
+        }
+
+        .experience > li > ul {
+            margin-top: 10px;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .contact-item {
+            padding: 14px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+        }
+
+        .contact-label {
+            font-size: 12px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .contact-value {
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .contact-value a {
+            color: var(--text);
+            text-decoration-thickness: 2px;
+            text-underline-offset: 3px;
+        }
+
+        .footer {
             text-align: center;
+            margin-top: 18px;
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 13px;
+        }
+
+        .footer a {
+            color: rgba(255, 255, 255, 0.86);
+        }
+
+        :focus-visible {
+            outline: 3px solid var(--ring);
+            outline-offset: 3px;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 640px) {
+            .hero__inner {
+                align-items: flex-start;
+            }
+            .avatar {
+                width: 56px;
+                height: 56px;
+                border-radius: 16px;
+            }
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>陈冠行 - 个人主页</h1>
+    <header class="hero">
+        <div class="hero__inner">
+            <div class="avatar" aria-hidden="true">CH</div>
+            <div>
+                <h1 class="hero__title">陈冠行</h1>
+                <p class="hero__subtitle">公共管理硕士（财政政策）学生｜数据分析｜公共财政｜战略规划</p>
+                <div class="chips" aria-label="个人标签">
+                    <span class="chip">Cornell MPA（预计 2025.06）</span>
+                    <span class="chip">GPA 3.9/4.0</span>
+                    <span class="chip">TMT / ESG / FIG</span>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            也可打开首页：<a href="index.html">index.html</a>
+        </div>
     </header>
-    <div class="container">
-        <div class="section">
+
+    <main class="container">
+        <section class="card" id="about">
             <h2>关于我</h2>
             <p>我是康奈尔大学公共管理硕士（财政政策）学生，预计2025年6月毕业。我对数据分析、公共财政和战略规划充满热情，并在TMT、ESG和金融服务等多个领域有丰富的研究和分析经验。</p>
-        </div>
-        <div class="section">
+        </section>
+
+        <section class="card" id="education">
             <h2>教育背景</h2>
             <ul>
                 <li>康奈尔大学，美国 - 公共管理硕士（财政政策），预计2025年6月毕业，GPA: 3.9/4.0</li>
                 <li>加利福尼亚大学圣迭戈分校，美国 - 管理科学学士，2020 - 2023年6月，GPA: 3.408/4.0</li>
             </ul>
-        </div>
-        <div class="section">
+        </section>
+
+        <section class="card" id="experience">
             <h2>工作经历</h2>
-            <ul>
+            <ul class="experience">
                 <li>
                     <strong>淡马锡控股，中国，北京 - 实习生</strong> (2023年06月 - 2023年08月)
                     <ul>
@@ -94,8 +332,9 @@
                     </ul>
                 </li>
             </ul>
-        </div>
-        <div class="section">
+        </section>
+
+        <section class="card" id="skills">
             <h2>技能</h2>
             <ul>
                 <li>高级统计工具和经济模型</li>
@@ -103,12 +342,21 @@
                 <li>中英文翻译和演示文稿设计</li>
                 <li>社交媒体运营和市场分析</li>
             </ul>
-        </div>
-        <div class="section contact">
+        </section>
+
+        <section class="card" id="contact">
             <h2>联系方式</h2>
-            <p>电话: 18612583319</p>
-            <p>邮箱: gc556@cornell.edu</p>
-        </div>
-    </div>
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <div class="contact-label">电话</div>
+                    <div class="contact-value"><a href="tel:+8618612583319">+86 186 1258 3319</a></div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-label">邮箱</div>
+                    <div class="contact-value"><a href="mailto:gc556@cornell.edu">gc556@cornell.edu</a></div>
+                </div>
+            </div>
+        </section>
+    </main>
 </body>
 </html>
