@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="健身计划打卡：每日体重、跑步/篮球记录上传，表格实时更新。" />
+  <title>健身打卡｜86→78</title>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
+  <style>
+    :root {
+      --bg: #0b1220;
+      --bg-2: #0a1b2b;
+      --surface: rgba(255, 255, 255, 0.94);
+      --surface-2: rgba(255, 255, 255, 0.78);
+      --text: #0f172a;
+      --muted: rgba(15, 23, 42, 0.72);
+      --border: rgba(15, 23, 42, 0.12);
+      --brand: #22c55e;
+      --brand-2: #16a34a;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --ring: rgba(34, 197, 94, 0.25);
+      --shadow: 0 10px 30px rgba(2, 8, 23, 0.18);
+      --radius: 16px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --surface: rgba(15, 23, 42, 0.88);
+        --surface-2: rgba(15, 23, 42, 0.62);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.70);
+        --border: rgba(255, 255, 255, 0.14);
+        --shadow: 0 14px 38px rgba(0, 0, 0, 0.35);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 800px at 15% 10%, rgba(34, 197, 94, 0.22), transparent 60%),
+        radial-gradient(900px 600px at 85% 30%, rgba(59, 130, 246, 0.18), transparent 55%),
+        linear-gradient(180deg, var(--bg), var(--bg-2));
+    }
+
+    a { color: inherit; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .hero { padding: 34px 0 44px; }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(20px, 3vw, 30px);
+      color: rgba(255, 255, 255, 0.94);
+      line-height: 1.1;
+    }
+    .subtitle {
+      margin: 8px 0 0;
+      color: rgba(255, 255, 255, 0.76);
+      line-height: 1.6;
+    }
+
+    .chiprow { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.10);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: rgba(255, 255, 255, 0.86);
+      font-size: 13px;
+      backdrop-filter: blur(10px);
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.10);
+      color: rgba(255, 255, 255, 0.92);
+      padding: 9px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .btn:hover { background: rgba(255, 255, 255, 0.14); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .main { margin: -22px auto 56px; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      overflow: hidden;
+    }
+
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 16px;
+      letter-spacing: 0.01em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card h2::before {
+      content: "";
+      width: 9px;
+      height: 18px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, var(--brand), var(--brand-2));
+    }
+
+    .hint { color: var(--muted); line-height: 1.65; margin: 0; }
+    .hint code { padding: 2px 6px; border-radius: 8px; border: 1px solid var(--border); background: rgba(2, 8, 23, 0.04); }
+
+    .row { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .row.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .row.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    label { font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.65);
+      outline: none;
+    }
+
+    textarea { min-height: 90px; resize: vertical; }
+
+    .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+    .actions .btn.primary { background: linear-gradient(180deg, var(--brand), var(--brand-2)); border-color: rgba(0,0,0,0.0); }
+    .actions .btn.primary:hover { filter: brightness(1.03); }
+
+    .status {
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .status.ok { border-color: rgba(34, 197, 94, 0.25); }
+    .status.warn { border-color: rgba(245, 158, 11, 0.28); }
+    .status.err { border-color: rgba(239, 68, 68, 0.28); }
+
+    .table-wrap { overflow: auto; border-radius: 14px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; min-width: 980px; background: rgba(255,255,255,0.35); }
+    th, td { padding: 10px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { position: sticky; top: 0; background: rgba(255,255,255,0.85); text-align: left; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.6);
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .pill.ok { border-color: rgba(34,197,94,0.28); }
+    .pill.miss { border-color: rgba(245,158,11,0.28); }
+
+    .small { font-size: 12px; color: var(--muted); }
+    .link { text-decoration: underline; text-underline-offset: 3px; }
+
+    .dangerlink { color: var(--danger); text-decoration: underline; text-underline-offset: 3px; }
+
+    :focus-visible {
+      outline: 3px solid var(--ring);
+      outline-offset: 3px;
+      border-radius: 12px;
+    }
+
+    @media (max-width: 720px) {
+      .row.two, .row.three { grid-template-columns: 1fr; }
+      table { min-width: 860px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="topbar">
+        <div>
+          <h1 class="title">健身打卡｜86 → 78</h1>
+          <p class="subtitle">每天：称重 + 跑步/篮球 + 上传记录。数据实时刷新（需要配置 Firebase）。</p>
+          <div class="chiprow">
+            <span class="chip" id="chipRange">日期：—</span>
+            <span class="chip" id="chipGoal">目标：—</span>
+            <a class="chip" href="index.html">返回主页</a>
+          </div>
+        </div>
+        <button class="btn" id="btnSignOut" style="display:none;">退出</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap main">
+    <div class="grid">
+      <section class="card" id="cardSetup">
+        <h2>首次配置（只需一次）</h2>
+        <p class="hint">
+          这个页面是静态网页，要实现<strong>实时更新+上传</strong>，需要一个云端数据库。
+          我已经把代码都写好，你只要按 <code>tracker-config.js</code> 的注释去 Firebase 复制配置。
+          配好后刷新本页即可使用。
+        </p>
+        <div class="actions" style="margin-top:12px;">
+          <a class="btn" href="tracker-setup.html">查看图文步骤</a>
+          <a class="btn" href="tracker-config.js" target="_blank" rel="noopener">打开 tracker-config.js</a>
+        </div>
+      </section>
+
+      <section class="card" id="cardAuth">
+        <h2>登录</h2>
+        <p class="hint">用你在 Firebase Authentication 里创建的邮箱+密码登录（建议只给你自己开这个账号）。</p>
+        <div class="row two" style="margin-top:12px;">
+          <div>
+            <label for="email">邮箱</label>
+            <input id="email" type="email" placeholder="you@example.com" autocomplete="email" />
+          </div>
+          <div>
+            <label for="password">密码</label>
+            <input id="password" type="password" placeholder="********" autocomplete="current-password" />
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn primary" id="btnSignIn">登录</button>
+          <div class="status" id="authStatus">未登录</div>
+        </div>
+      </section>
+
+      <section class="card" id="cardCheckin" style="display:none;">
+        <h2>今日打卡</h2>
+        <div class="row three">
+          <div>
+            <label for="date">日期</label>
+            <input id="date" type="date" />
+          </div>
+          <div>
+            <label for="weight">体重（kg）</label>
+            <input id="weight" type="number" step="0.1" min="30" max="250" placeholder="例如：86.0" />
+          </div>
+          <div>
+            <label for="activity">运动</label>
+            <select id="activity">
+              <option value="run">跑步</option>
+              <option value="basketball">篮球</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row three" style="margin-top:10px;">
+          <div>
+            <label for="minutes">时长（分钟）</label>
+            <input id="minutes" type="number" step="1" min="0" max="600" placeholder="例如：45" />
+          </div>
+          <div>
+            <label for="distance">距离（km，可选）</label>
+            <input id="distance" type="number" step="0.01" min="0" max="200" placeholder="例如：5.00" />
+          </div>
+          <div>
+            <label for="proof">上传记录（截图/照片）</label>
+            <input id="proof" type="file" accept="image/*,application/pdf" />
+          </div>
+        </div>
+
+        <div style="margin-top:10px;">
+          <label for="note">备注（可选）</label>
+          <textarea id="note" placeholder="例如：今天跑步很轻松；篮球打了 2 小时；饮食控制情况..."></textarea>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" id="btnSave">提交/更新当日打卡</button>
+          <button class="btn" id="btnDelete">删除当日打卡</button>
+          <div class="status" id="saveStatus">准备就绪</div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>计划表（实时）</h2>
+        <p class="hint">表格会自动显示每一天的目标体重，并填入你上传的实际数据。</p>
+        <div class="table-wrap" style="margin-top:12px;">
+          <table>
+            <thead>
+              <tr>
+                <th>日期</th>
+                <th>目标(kg)</th>
+                <th>实际(kg)</th>
+                <th>差值</th>
+                <th>运动</th>
+                <th>分钟</th>
+                <th>距离</th>
+                <th>记录</th>
+                <th>备注</th>
+                <th>更新时间</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <p class="small" style="margin-top:10px;">
+          提醒：体重会有水分波动，建议看<strong>趋势</strong>。如果你想加“7日平均/图表”，我也能继续给你做。
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="./tracker.js"></script>
+</body>
+</html>

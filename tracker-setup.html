@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>健身打卡｜配置步骤</title>
+  <style>
+    :root { --bg:#0b1220; --bg2:#0a1b2b; --surface: rgba(255,255,255,.94); --border: rgba(15,23,42,.12); --muted: rgba(15,23,42,.72); --shadow: 0 10px 30px rgba(2,8,23,.18); --radius: 16px; }
+    body{ margin:0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial; background:linear-gradient(180deg,var(--bg),var(--bg2)); color:#fff; }
+    a{ color:#fff; text-decoration: underline; text-underline-offset:3px; }
+    .wrap{ max-width: 900px; margin:0 auto; padding: 26px 16px 56px; }
+    .card{ background: var(--surface); color:#0f172a; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; }
+    .card + .card{ margin-top: 12px; }
+    h1{ margin:0 0 8px; font-size: 22px; }
+    h2{ margin:0 0 10px; font-size: 16px; }
+    p, li{ color: var(--muted); line-height: 1.7; }
+    code{ padding:2px 6px; border-radius: 8px; border:1px solid var(--border); background: rgba(2,8,23,0.04); }
+    .note{ border-left: 4px solid #22c55e; padding: 10px 12px; background: rgba(34,197,94,0.08); border-radius: 12px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div style="margin-bottom:10px;">
+      <a href="tracker.html">← 返回打卡页</a>
+    </div>
+
+    <div class="card">
+      <h1>配置步骤（3–5 分钟）</h1>
+      <p class="note">
+        你的网站是 GitHub Pages（静态网页）。要做到“手机上传记录 + 数据实时更新”，需要一个云端数据库。
+        这里用 Firebase（免费额度够个人打卡用）。
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>1）创建 Firebase 项目</h2>
+      <ol>
+        <li>打开 Firebase 控制台：<code>console.firebase.google.com</code></li>
+        <li>点“添加项目” → 一路下一步即可</li>
+        <li>进入项目后，点左侧“项目概览”旁边的小齿轮 → “项目设置”</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>2）创建 Web 应用并复制配置</h2>
+      <ol>
+        <li>在“你的应用”里点 Web 图标（&lt;/&gt;）创建 Web 应用</li>
+        <li>创建完成后会看到一段 <code>firebaseConfig</code></li>
+        <li>把它复制到仓库的 <code>tracker-config.js</code> 里（替换 REPLACE_ME）</li>
+      </ol>
+      <p><strong>注意：</strong>文件名是 <code>tracker-config.js</code>（上面那行打错了不要紧，按这个为准）。</p>
+    </div>
+
+    <div class="card">
+      <h2>3）开启 Authentication（邮箱密码登录）</h2>
+      <ol>
+        <li>Firebase 左侧：Authentication → “开始使用”</li>
+        <li>Sign-in method → 启用 <code>Email/Password</code></li>
+        <li>Users → 添加用户（用你的邮箱，比如 <code>gc556@cornell.edu</code>）并设置密码</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>4）创建 Firestore Database</h2>
+      <ol>
+        <li>Firestore Database → “创建数据库”</li>
+        <li>选择 Production mode（生产模式）</li>
+        <li>地区随意（就近）</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>5）开启 Storage（用于上传截图/照片）</h2>
+      <ol>
+        <li>Storage → “开始使用”</li>
+        <li>选择 Production mode</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>6）安全规则（非常重要）</h2>
+      <p>否则别人也可能往你的数据库里写入垃圾数据。</p>
+      <p><strong>Firestore Rules（复制粘贴，然后把邮箱改成你的）：</strong></p>
+      <pre><code>rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null
+        &amp;&amp; request.auth.token.email == "gc556@cornell.edu"
+        &amp;&amp; request.auth.uid == userId;
+    }
+  }
+}</code></pre>
+      <p><strong>Storage Rules（同样改邮箱）：</strong></p>
+      <pre><code>rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /proofs/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null
+        &amp;&amp; request.auth.token.email == "gc556@cornell.edu"
+        &amp;&amp; request.auth.uid == userId;
+    }
+  }
+}</code></pre>
+    </div>
+
+    <div class="card">
+      <h2>完成后怎么用</h2>
+      <ol>
+        <li>打开 <code>tracker.html</code></li>
+        <li>用你创建的邮箱+密码登录</li>
+        <li>每天填体重、选跑步/篮球、上传截图 → 提交</li>
+        <li>表格会实时更新（换手机登录也能看到）</li>
+      </ol>
+    </div>
+  </div>
+</body>
+</html>
+
